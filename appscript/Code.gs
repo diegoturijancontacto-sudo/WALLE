@@ -1,6 +1,6 @@
 /**
  * Blog de Notas - Servidor (Google Apps Script)
- * Versión compatible con app(2).js
+ * Versión compatible con app.js
  */
 
 const SHEET_NAME = 'BlogDeNotas';
