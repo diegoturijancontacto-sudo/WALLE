@@ -1019,6 +1019,17 @@ async function init() {
   // Router
   window.addEventListener('hashchange', handleRoute);
   await handleRoute();
+
+  // Hide loading screen
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen) {
+    loadingScreen.classList.add('fade-out');
+    const fallback = setTimeout(() => loadingScreen.remove(), 600);
+    loadingScreen.addEventListener('transitionend', () => {
+      clearTimeout(fallback);
+      loadingScreen.remove();
+    }, { once: true });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
