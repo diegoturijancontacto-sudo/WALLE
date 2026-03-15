@@ -817,11 +817,82 @@ input:focus, select:focus, textarea:focus {
 /* ============================================================
    Responsive
    ============================================================ */
+
+/* Tablet / small desktop */
+@media (max-width: 768px) {
+  .notas-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .nota-article { padding: 28px 28px; }
+  .mapa-legend { gap: 10px; font-size: 0.78rem; }
+}
+
+/* Mobile */
 @media (max-width: 640px) {
-  .navbar { padding: 0 14px; }
+  /* Navbar */
+  .navbar { padding: 0 12px; gap: 4px; }
+  .nav-title { display: none; }
+  .nav-link { padding: 8px 10px; font-size: 0.82rem; gap: 4px; }
   .nav-link span:first-child { display: none; }
-  .view { padding: 20px 14px; }
-  .nota-article { padding: 24px 20px; }
-  .search-bar input { width: 180px; }
-  .notas-grid { grid-template-columns: 1fr; }
+
+  /* Views */
+  .view { padding: 16px 12px; }
+
+  /* Lista */
+  .view-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .view-header h1 { font-size: 1.5rem; }
+  .search-bar { width: 100%; }
+  .search-bar input { width: 100%; }
+  .notas-grid { grid-template-columns: 1fr; gap: 14px; }
+
+  /* Nota */
+  .nota-container { max-width: 100%; }
+  .nota-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .nota-actions { width: 100%; justify-content: flex-end; }
+  .nota-article { padding: 18px 16px; }
+  .nota-article h1 { font-size: 1.5rem; }
+  .nota-meta { flex-wrap: wrap; gap: 8px 16px; }
+
+  /* Editor */
+  .editor-container { max-width: 100%; }
+  .editor-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .editor-header .btn { width: 100%; justify-content: center; }
+  .editor-titulo-input { padding: 16px 14px; font-size: 1.2rem; }
+  .editor-meta-input { padding: 10px 14px; }
+  .editor-toolbar { padding: 6px 10px; gap: 3px; }
+  .toolbar-btn { width: 34px; height: 34px; }
+  .editor-content { min-height: 220px; padding: 14px; }
+
+  /* Mapa */
+  .mapa-header { padding: 10px 12px; gap: 8px; }
+  .mapa-header h1 { font-size: 1rem; flex: none; width: 100%; }
+  .mapa-legend { flex-wrap: wrap; gap: 6px 12px; order: 3; width: 100%; }
+  .mapa-header .btn { margin-left: auto; }
+
+  /* Modals */
+  .modal-content { margin: 10px; border-radius: var(--radius-sm); }
+  .modal-body { max-height: 70vh; }
+
+  /* Buttons */
+  .btn { padding: 10px 16px; font-size: 0.88rem; }
+
+  /* Toast */
+  .toast { bottom: 16px; left: 12px; right: 12px; transform: none; text-align: center; }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }

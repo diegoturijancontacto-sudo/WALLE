@@ -182,13 +182,12 @@
         <label for="config-api-url">URL del Web App de AppScript</label>
         <input type="url" id="config-api-url" placeholder="https://script.google.com/macros/s/…/exec">
         <p class="config-hint">
-          Despliega <code>appscript/Code.gs</code> como <strong>Web App</strong> en Google Apps Script
-          (Ejecutar como: <em>Yo</em>, Acceso: <em>Cualquiera</em>) y pega aquí la URL generada.
-          Sin URL se usa almacenamiento local (modo demo).
+          URL del Web App de Google Apps Script preconfigurada. Puedes cambiarla si necesitas apuntar a otro despliegue.
+          Activa el modo demo para usar almacenamiento local en su lugar.
         </p>
         <div class="config-mode" style="margin-top:4px">
           <label style="display:flex;align-items:center;gap:8px;font-weight:normal;font-size:.88rem;cursor:pointer">
-            <input type="checkbox" id="config-demo-mode" checked>
+            <input type="checkbox" id="config-demo-mode">
             Modo demo — usar almacenamiento local (localStorage)
           </label>
         </div>

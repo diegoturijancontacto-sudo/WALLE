@@ -7,6 +7,8 @@
 // ============================================================
 // Configuration & LocalStorage helpers
 // ============================================================
+const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbzfWrvoGp56K5RpNI5NO-kK91L25NP3l68QxduSjD8a6vlKzVozksX8Ro-avo65gdBS/exec';
+
 const Config = {
   STORAGE_KEY: 'blogNotas_notes',
   CONFIG_KEY:  'blogNotas_config',
@@ -14,9 +16,9 @@ const Config = {
   load() {
     try {
       const raw = localStorage.getItem(this.CONFIG_KEY);
-      return raw ? JSON.parse(raw) : { apiUrl: '', demoMode: true };
+      return raw ? JSON.parse(raw) : { apiUrl: DEFAULT_API_URL, demoMode: false };
     } catch (_) {
-      return { apiUrl: '', demoMode: true };
+      return { apiUrl: DEFAULT_API_URL, demoMode: false };
     }
   },
 
