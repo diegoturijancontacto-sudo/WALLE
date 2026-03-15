@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Blog de Notas — crea, edita y conecta tus notas con citas. Almacena en Google Sheets vía AppScript.">
+  <title>Blog de Notas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===================== Navbar ===================== -->
+  <nav class="navbar">
+    <a href="#/" class="nav-brand" style="text-decoration:none">
+      <span class="nav-logo">📝</span>
+      <span class="nav-title">Blog de Notas</span>
+    </a>
+    <div class="nav-links">
+      <a href="#/" class="nav-link active" data-view="lista">
+        <span>☰</span> Lista
+      </a>
+      <a href="#/nueva" class="nav-link" data-view="editor">
+        <span>＋</span> Nueva Nota
+      </a>
+      <a href="#/mapa" class="nav-link" data-view="mapa">
+        <span>◉</span> Mapa
+      </a>
+      <button class="btn-config" id="btn-config" title="Configuración AppScript">⚙</button>
+    </div>
+  </nav>
+
+  <!-- ===================== Main content ===================== -->
+  <main class="main-content">
+
+    <!-- ─── View: Lista ─── -->
+    <div id="view-lista" class="view active">
+      <div class="view-header">
+        <h1>Mis Notas</h1>
+        <div class="search-bar">
+          <input
+            type="search"
+            id="search-input"
+            placeholder="Buscar notas…"
+            aria-label="Buscar notas"
+            autocomplete="off">
+        </div>
+      </div>
+      <div id="notas-grid" class="notas-grid" role="list" aria-label="Lista de notas"></div>
+      <div id="empty-state" class="empty-state hidden">
+        <p>Aún no hay notas. ¡Crea la primera!</p>
+        <a href="#/nueva" class="btn btn-primary">Nueva Nota</a>
+      </div>
+    </div>
+
+    <!-- ─── View: Nota ─── -->
+    <div id="view-nota" class="view hidden">
+      <div class="nota-container">
+        <div class="nota-header">
+          <button class="btn-back" id="btn-back-nota">← Volver</button>
+          <div class="nota-actions">
+            <button class="btn btn-secondary" id="btn-edit-nota">✏ Editar</button>
+            <button class="btn btn-danger"    id="btn-delete-nota">🗑 Eliminar</button>
+          </div>
+        </div>
+        <article class="nota-article" aria-label="Nota">
+          <h1 id="nota-titulo"></h1>
+          <div class="nota-meta">
+            <span id="nota-fecha"></span>
+            <span id="nota-responsable"></span>
+          </div>
+          <div id="nota-contenido" class="nota-contenido"></div>
+          <div id="nota-citas"     class="nota-citas"></div>
+        </article>
+      </div>
+    </div>
+
+    <!-- ─── View: Editor ─── -->
+    <div id="view-editor" class="view hidden">
+      <div class="editor-container">
+        <div class="editor-header">
+          <button class="btn-back" id="btn-cancel-editor">← Cancelar</button>
+          <button class="btn btn-primary" id="btn-save-nota">💾 Guardar</button>
+        </div>
+
+        <div class="editor-form">
+          <!-- Metadata -->
+          <input
+            type="text"
+            id="editor-titulo"
+            class="editor-titulo-input"
+            placeholder="Título de la nota…"
+            aria-label="Título"
+            maxlength="200">
+          <input
+            type="text"
+            id="editor-responsable"
+            class="editor-meta-input"
+            placeholder="Nombre del responsable…"
+            aria-label="Responsable"
+            maxlength="100">
+
+          <!-- Toolbar -->
+          <div class="editor-toolbar" role="toolbar" aria-label="Herramientas de formato">
+            <button class="toolbar-btn" data-cmd="bold"          title="Negrita (Ctrl+B)"><b>B</b></button>
+            <button class="toolbar-btn" data-cmd="italic"        title="Cursiva (Ctrl+I)"><i>I</i></button>
+            <button class="toolbar-btn" data-cmd="underline"     title="Subrayado (Ctrl+U)"><u>U</u></button>
+            <button class="toolbar-btn" data-cmd="strikeThrough" title="Tachado"><s>S</s></button>
+            <div class="toolbar-separator" aria-hidden="true"></div>
+
+            <select class="toolbar-select" id="heading-select" aria-label="Formato de bloque">
+              <option value="p">Párrafo</option>
+              <option value="h1">Título 1</option>
+              <option value="h2">Título 2</option>
+              <option value="h3">Título 3</option>
+            </select>
+            <div class="toolbar-separator" aria-hidden="true"></div>
+
+            <button class="toolbar-btn" data-cmd="insertUnorderedList" title="Lista de viñetas">• Lista</button>
+            <button class="toolbar-btn" data-cmd="insertOrderedList"   title="Lista numerada">1. Lista</button>
+            <div class="toolbar-separator" aria-hidden="true"></div>
+
+            <button class="toolbar-btn" data-cmd="justifyLeft"   title="Alinear izquierda">⇤</button>
+            <button class="toolbar-btn" data-cmd="justifyCenter" title="Centrar">⇔</button>
+            <button class="toolbar-btn" data-cmd="justifyRight"  title="Alinear derecha">⇥</button>
+            <div class="toolbar-separator" aria-hidden="true"></div>
+
+            <button class="toolbar-btn" id="btn-add-link"             title="Insertar enlace">🔗</button>
+            <button class="toolbar-btn" data-cmd="removeFormat"       title="Limpiar formato">✕ Formato</button>
+          </div>
+
+          <!-- Rich-text area -->
+          <div
+            id="editor-content"
+            class="editor-content"
+            contenteditable="true"
+            role="textbox"
+            aria-multiline="true"
+            aria-label="Contenido de la nota"
+            data-placeholder="Escribe el contenido de tu nota aquí…"
+            spellcheck="true"></div>
+
+          <!-- Citations -->
+          <div class="editor-citas-section">
+            <h3>Citas</h3>
+            <div id="citas-seleccionadas" class="citas-chips" aria-label="Citas seleccionadas"></div>
+            <button class="btn btn-secondary" id="btn-add-cita">+ Agregar Cita</button>
+          </div>
+        </div><!-- /editor-form -->
+      </div><!-- /editor-container -->
+    </div><!-- /view-editor -->
+
+    <!-- ─── View: Mapa ─── -->
+    <div id="view-mapa" class="view view-mapa hidden">
+      <div class="mapa-header">
+        <h1>Mapa de Citas</h1>
+        <div class="mapa-legend">
+          <span class="legend-item"><span class="legend-node" style="background:var(--primary)"></span> Cita / citado</span>
+          <span class="legend-item"><span class="legend-node" style="background:#a855f7"></span> Solo citado</span>
+          <span class="legend-item"><span class="legend-node" style="background:#94a3b8"></span> Sin citas</span>
+          <span class="legend-item"><span class="legend-arrow">→</span> Cita</span>
+        </div>
+        <button class="btn btn-secondary" id="btn-reset-zoom">↺ Resetear Vista</button>
+      </div>
+      <div id="mapa-container" class="mapa-container">
+        <canvas id="mapa-canvas" aria-label="Mapa de relaciones entre notas" role="img"></canvas>
+      </div>
+    </div>
+
+  </main><!-- /main-content -->
+
+  <!-- ===================== Modals ===================== -->
+
+  <!-- Config -->
+  <div id="modal-config" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-config-title">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-config-title">Configuración</h2>
+        <button class="modal-close" id="modal-config-close" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <label for="config-api-url">URL del Web App de AppScript</label>
+        <input type="url" id="config-api-url" placeholder="https://script.google.com/macros/s/…/exec">
+        <p class="config-hint">
+          Despliega <code>appscript/Code.gs</code> como <strong>Web App</strong> en Google Apps Script
+          (Ejecutar como: <em>Yo</em>, Acceso: <em>Cualquiera</em>) y pega aquí la URL generada.
+          Sin URL se usa almacenamiento local (modo demo).
+        </p>
+        <div class="config-mode" style="margin-top:4px">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:normal;font-size:.88rem;cursor:pointer">
+            <input type="checkbox" id="config-demo-mode" checked>
+            Modo demo — usar almacenamiento local (localStorage)
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btn-save-config">Guardar configuración</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Citation Picker -->
+  <div id="modal-citas" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-citas-title">
+    <div class="modal-backdrop" id="modal-citas-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-citas-title">Agregar Cita</h2>
+        <button class="modal-close" id="modal-citas-close" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <input
+          type="search"
+          id="citas-search"
+          placeholder="Buscar nota a citar…"
+          aria-label="Buscar nota"
+          autocomplete="off">
+        <div id="citas-lista" class="citas-lista" role="listbox" aria-label="Notas disponibles"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation -->
+  <div id="modal-delete" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-delete-title">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2 id="modal-delete-title">Eliminar Nota</h2>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar esta nota? Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-cancel-delete">Cancelar</button>
+        <button class="btn btn-danger"    id="btn-confirm-delete">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
