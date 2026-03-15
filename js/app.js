@@ -65,15 +65,24 @@ class NotesAPI {
   }
 
   async _post(body) {
-    const url = this._cfg.apiUrl;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!response.ok) throw new Error('Error HTTP ' + response.status);
-    return response.json();
-  }
+  const url = this._cfg.apiUrl;
+
+  // POST "simple" (sin preflight): application/x-www-form-urlencoded
+  const formBody = new URLSearchParams();
+  Object.entries(body).forEach(([k, v]) => {
+    // Para arrays/objetos, lo mandamos como string
+    formBody.set(k, typeof v === 'string' ? v : JSON.stringify(v));
+  });
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    body: formBody.toString()
+  });
+
+  if (!response.ok) throw new Error('Error HTTP ' + response.status);
+  return response.json();
+}
 
   // --- Public CRUD ---
   async getAll() {
